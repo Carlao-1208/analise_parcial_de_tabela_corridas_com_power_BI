@@ -1,0 +1,108 @@
+table 'tabela ATUALIZADA ESSA PORRA'
+	lineageTag: 00a8afbf-bfe2-4b09-9682-628f5ca3ac87
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b618e78c-9e19-4d19-af5f-55c5b1b74ac8
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variation
+			isDefault
+			relationship: 7f64e460-2b27-4c95-98d5-12ad747ee38b
+			defaultHierarchy: LocalDateTable_b284e024-a5a1-4fe8-8519-4ddee4bc2a24.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Gastos_combustivel
+		dataType: int64
+		formatString: 0
+		lineageTag: b184b949-0905-44c8-a798-ca97ca60a3c9
+		summarizeBy: sum
+		sourceColumn: Gastos_combustivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gasolina
+		dataType: int64
+		formatString: 0
+		lineageTag: 970f9bdb-900c-4e19-859b-3ef4b4549b14
+		summarizeBy: sum
+		sourceColumn: Gasolina
+
+		annotation SummarizationSetBy = Automatic
+
+	column alcool
+		dataType: int64
+		formatString: 0
+		lineageTag: f0109b01-b15e-4b2d-8396-7ebb67e92411
+		summarizeBy: sum
+		sourceColumn: alcool
+
+		annotation SummarizationSetBy = Automatic
+
+	column Preco_gasolina
+		dataType: decimal
+		formatString: "R$"\ #,0.###############;-"R$"\ #,0.###############;"R$"\ #,0.###############
+		lineageTag: dcf9bdcd-3a0d-45a9-bc1e-f5e3e7afde0d
+		summarizeBy: sum
+		sourceColumn: Preco_gasolina
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column preco_alcool
+		dataType: decimal
+		formatString: "R$"\ #,0.###############;-"R$"\ #,0.###############;"R$"\ #,0.###############
+		lineageTag: 8884c945-e247-435e-a651-67f427435e2d
+		summarizeBy: sum
+		sourceColumn: preco_alcool
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	column Kms
+		dataType: double
+		lineageTag: 750abe71-c28e-47cd-aa9c-ce1ee30ddd6d
+		summarizeBy: sum
+		sourceColumn: Kms
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Ganhos_app
+		dataType: decimal
+		formatString: "R$"\ #,0.###############;-"R$"\ #,0.###############;"R$"\ #,0.###############
+		lineageTag: f7b56ee6-83a6-4e6c-af54-f123e20da30c
+		summarizeBy: sum
+		sourceColumn: Ganhos_app
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	partition 'tabela ATUALIZADA ESSA PORRA' = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\eu\OneDrive\Área de Trabalho\tabela ATUALIZADA ESSA PORRA.txt"),[Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    #"Tipo Alterado com Localidade" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos", {{"Preco_gasolina", Currency.Type}}, "en-CA"),
+				    #"Tipo Alterado com Localidade1" = Table.TransformColumnTypes(#"Tipo Alterado com Localidade", {{"preco_alcool", Currency.Type}}, "en-CA"),
+				    #"Tipo Alterado com Localidade2" = Table.TransformColumnTypes(#"Tipo Alterado com Localidade1", {{"Kms", type number}}, "en-CA"),
+				    #"Tipo Alterado com Localidade3" = Table.TransformColumnTypes(#"Tipo Alterado com Localidade2", {{"Ganhos_app", Currency.Type}}, "en-CA"),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Tipo Alterado com Localidade3", each ([Ganhos_app] <> null)),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"alcool", Int64.Type}, {"Gasolina", Int64.Type}, {"Gastos_combustivel", Int64.Type}, {"Data", type date}})
+				in
+				    #"Tipo Alterado"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

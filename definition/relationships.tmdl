@@ -1,0 +1,5 @@
+relationship 7f64e460-2b27-4c95-98d5-12ad747ee38b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'tabela ATUALIZADA ESSA PORRA'.Data
+	toColumn: LocalDateTable_b284e024-a5a1-4fe8-8519-4ddee4bc2a24.Date
+
